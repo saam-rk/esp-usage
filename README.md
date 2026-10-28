@@ -6,7 +6,7 @@ An ESP32 with a 0.96-inch 128×64 I²C OLED displays the remaining percentage an
 
 ## What you need
 
-- ESP32 DevKit V1 and a USB data cable
+- ESP32 dev board (DevKit V1 / 38-pin NodeMCU ESP-32S style) and a USB data cable
 - 0.96-inch 128×64 I²C OLED (SSD1306, 4 pins: GND, VDD, SCK/SCL, SDA)
 - Breadboard and four male-to-female Dupont jumper wires
 - Windows with [Claude Code Usage Monitor](https://github.com/CodeZeno/Claude-Code-Usage-Monitor) running, Claude Code and Codex enabled
@@ -20,10 +20,12 @@ Push the OLED's four pins into four separate breadboard rows. Then use one male-
 | --- | --- |
 | GND | GND |
 | VDD | 3V3 |
-| SDA | GPIO 21 (labeled `D21`) |
-| SCK / SCL | GPIO 22 (labeled `D22`) |
+| SDA | GPIO 21 (labeled `D21` or `P21`) |
+| SCK / SCL | GPIO 22 (labeled `D22` or `P22`) |
 
 Use **3V3**, not VIN/5V. The USB cable powers both boards.
+
+On the 38-pin NodeMCU ESP-32S board the labels are printed on the underside. With the labels facing you and the USB port at the bottom: `3V3` is the top pin of the right column; `GND`, `P22` and `P21` are the 1st, 3rd and 6th pins from the top of the left column.
 
 ## Upload the firmware
 

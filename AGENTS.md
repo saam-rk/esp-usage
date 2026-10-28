@@ -28,15 +28,16 @@ firmware/UsageDisplay/    Arduino sketch for the ESP32 and OLED
 
 ## Hardware and wiring
 
-- ESP32 DevKit V1, blue 0.96-inch 128×64 I²C OLED (SSD1306-compatible, address `0x3C`), MB-102 breadboard, Dupont jumpers.
+- ESP32 dev board, 38-pin NodeMCU ESP-32S style (sold as "DevKit V1"), CP2102 USB chip, USB-C. Pin labels (`3V3`, `GND`, `P21`, `P22`, ...) are printed only on the underside. Arduino board: "ESP32 Dev Module".
+- Blue 0.96-inch 128×64 I²C OLED, pin order `GND VDD SCK SDA` (SSD1306-compatible, address `0x3C`), MB-102 breadboard, Dupont jumpers.
 - The OLED sits in four separate breadboard rows. One male-to-female jumper per connection: female end on the ESP32 pin, male end in the OLED pin's row.
 
 | OLED pin | ESP32 pin |
 | --- | --- |
 | GND | GND |
 | VDD | 3V3 (never 5V/VIN) |
-| SDA | GPIO 21 |
-| SCK / SCL | GPIO 22 |
+| SDA | GPIO 21 (`P21`) |
+| SCK / SCL | GPIO 22 (`P22`) |
 
 No sensors or buttons are used.
 

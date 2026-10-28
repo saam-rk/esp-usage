@@ -19,6 +19,7 @@ start-bridge.bat          Double-click launcher: sets up .venv and runs the brid
 bridge/bridge.py          Windows bridge: reads the monitor cache, sends values over USB serial
 bridge/requirements.txt   Python dependencies for the bridge
 firmware/UsageDisplay/    Arduino sketch for the ESP32 and OLED
+docs/                     README images (strip photo metadata before adding)
 ```
 
 ## Communication

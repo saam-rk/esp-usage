@@ -44,15 +44,13 @@ Open **Device Manager** (right-click the Start button) and expand **Ports (COM &
 
 ## Run the bridge
 
-In PowerShell, from this project folder (replace `COM5` with your port):
+Double-click **`start-bridge.bat`** in the project folder. The first run sets up Python for you, which takes about a minute.
 
-```powershell
-py -m venv .venv
-.\.venv\Scripts\python -m pip install -r bridge\requirements.txt
-.\.venv\Scripts\python bridge\bridge.py --port COM5
-```
+The bridge finds the ESP32's COM port automatically (boards with a CP210x or CH340 USB chip). It waits if the board is not plugged in and reconnects if you unplug it. Leave its window open; close the window to stop.
 
-The first two commands are only needed once. Close Arduino IDE's Serial Monitor first; only one program can use the COM port at a time. Press `Ctrl+C` to stop the bridge.
+Only one program can use the COM port at a time, so close Arduino IDE's Serial Monitor first. To choose a port yourself, run `start-bridge.bat COM5` from a terminal.
+
+Tip: right-click `start-bridge.bat` → **Show more options** → **Send to** → **Desktop (create shortcut)** to start it from your desktop.
 
 ## Reading the screen
 

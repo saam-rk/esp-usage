@@ -10,6 +10,14 @@ import time
 from pathlib import Path
 
 import serial
+from serial.tools import list_ports
+
+# USB vendor IDs of the USB-to-serial chips used on common ESP32 boards.
+ESP32_USB_VENDORS = {
+    0x10C4: "Silicon Labs CP210x",
+    0x1A86: "WCH CH340/CH9102",
+}
+RETRY_SECONDS = 2.0
 
 
 def cache_path() -> Path:
@@ -66,25 +74,95 @@ def read_payload(path: Path, now: int | None = None) -> str:
     return ",".join(str(value) for value in values) + "\n"
 
 
+def find_esp32_ports() -> list[str]:
+    return sorted(p.device for p in list_ports.comports() if p.vid in ESP32_USB_VENDORS)
+
+
+def port_is_busy(exc: Exception) -> bool:
+    message = str(exc)
+    return any(text in message for text in ("PermissionError", "Access is denied"))
+
+
+class Status:
+    """Print a status message only when it changes, so retries do not flood the window."""
+
+    def __init__(self) -> None:
+        self.last = ""
+
+    def show(self, message: str) -> None:
+        if message != self.last:
+            print(f"[{time.strftime('%H:%M:%S')}] {message}", flush=True)
+            self.last = message
+
+
+def pick_port(requested: str | None, status: Status) -> str | None:
+    if requested:
+        return requested
+    ports = find_esp32_ports()
+    if len(ports) == 1:
+        return ports[0]
+    if ports:
+        status.show(
+            f"Found several possible ESP32 boards: {', '.join(ports)}. "
+            f"Unplug the extra ones, or start with: start-bridge.bat {ports[0]}"
+        )
+    else:
+        status.show("Waiting for the ESP32. Plug it into this PC with a USB data cable.")
+    return None
+
+
+def send_forever(port_name: str, path: Path, interval: float, status: Status) -> None:
+    with serial.Serial(port_name, 115200, timeout=1, write_timeout=1) as port:
+        time.sleep(2.0)  # Allow the ESP32 to reboot after opening its serial port.
+        while True:
+            if path.exists():
+                status.show(f"Connected to the ESP32 on {port_name}. The display is updating.")
+            else:
+                status.show("Usage cache not found. Is Claude Code Usage Monitor running?")
+            port.write(read_payload(path).encode("ascii"))
+            port.flush()
+            time.sleep(interval)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Send usage-cache readings to the ESP32 OLED.")
-    parser.add_argument("--port", required=True, help="ESP32 serial port, for example COM5")
+    parser.add_argument(
+        "port", nargs="?", help="ESP32 serial port, for example COM5 (found automatically if omitted)"
+    )
+    parser.add_argument("--port", dest="port_option", metavar="PORT", help="same as the positional port")
     parser.add_argument("--interval", type=float, default=1.0, help="Serial update interval in seconds")
     args = parser.parse_args()
-    path = cache_path()
+    requested = args.port_option or args.port
+    interval = max(0.25, args.interval)
     try:
-        with serial.Serial(args.port, 115200, timeout=1, write_timeout=1) as port:
-            print(f"Reading {path} and sending display data to {args.port}. Press Ctrl+C to stop.")
-            time.sleep(2.0)  # Allow the ESP32 to reboot after opening its serial port.
-            while True:
-                port.write(read_payload(path).encode("ascii"))
-                port.flush()
-                time.sleep(max(0.25, args.interval))
-    except KeyboardInterrupt:
-        return 0
-    except (OSError, serial.SerialException, RuntimeError) as exc:
+        path = cache_path()
+    except RuntimeError as exc:
         print(f"Bridge error: {exc}", file=sys.stderr)
         return 1
+
+    status = Status()
+    print("esp-usage bridge: sends your Claude Code and Codex usage to the ESP32 display.")
+    print("Leave this window open. Close it to stop the display updates.\n")
+    try:
+        while True:
+            port_name = pick_port(requested, status)
+            if port_name is not None:
+                try:
+                    send_forever(port_name, path, interval, status)
+                except (serial.SerialException, OSError) as exc:
+                    if port_is_busy(exc):
+                        status.show(
+                            f"{port_name} is busy. Close Arduino IDE's Serial Monitor "
+                            "or other bridge windows."
+                        )
+                    elif requested:
+                        status.show(f"Cannot use {port_name}. Is the ESP32 plugged in on that port?")
+                    else:
+                        status.show("Lost the ESP32. Waiting for it to come back...")
+            time.sleep(RETRY_SECONDS)
+    except KeyboardInterrupt:
+        print("\nBridge stopped.")
+        return 0
 
 
 if __name__ == "__main__":

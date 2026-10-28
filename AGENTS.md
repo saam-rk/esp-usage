@@ -14,6 +14,7 @@ This is a small, personal project maintained by one person. Keep it simple, read
 AGENTS.md                 Project rules (this file)
 README.md                 What the project is and how to build and run it
 PROGRESS.md               Local session notes (ignored by Git)
+start-bridge.bat          Double-click launcher: sets up .venv and runs the bridge
 bridge/bridge.py          Windows bridge: reads the monitor cache, sends values over USB serial
 bridge/requirements.txt   Python dependencies for the bridge
 firmware/UsageDisplay/    Arduino sketch for the ESP32 and OLED
@@ -44,7 +45,8 @@ No sensors or buttons are used.
 ## Architecture
 
 - [Claude Code Usage Monitor](https://github.com/CodeZeno/Claude-Code-Usage-Monitor) runs on Windows and writes `%APPDATA%\ClaudeCodeUsageMonitor\usage-cache.json`.
-- `bridge/bridge.py` reads that cache, extracts only the needed usage values and sends one short text line per second to the ESP32 over USB serial (115200 baud). No Wi-Fi.
+- `bridge/bridge.py` reads that cache, extracts only the needed usage values and sends one short text line per second to the ESP32 over USB serial (115200 baud). No Wi-Fi. It auto-detects the port by USB vendor ID (CP210x, CH340) and reconnects after unplugging.
+- The firmware shows "connection lost" after 5 seconds without a valid line.
 - Serial line format: `c5_left,c5_reset_s,cw_left,cw_reset_s,x5_left,x5_reset_s,xw_left,xw_reset_s,stale`. `-1` means "not available" (shown as `--`); all `-2` means "cache missing or invalid".
 - In the cache, `percentage` is the **used** percentage; remaining = 100 − used. `percentage: null` or `available: false` means the window has no reading.
 

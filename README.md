@@ -2,7 +2,7 @@
 
 Show your remaining **Claude Code** and **Codex** usage on a tiny OLED screen next to your PC.
 
-<img src="docs/display.jpg" alt="The OLED showing remaining Claude Code and Codex usage with reset timers, wired to an ESP32 on a breadboard" width="600">
+<img src="docs/working-display.jpg" alt="The OLED showing remaining Claude Code and Codex usage with reset timers, wired to an ESP32 on a breadboard" width="600">
 
 An ESP32 with a 0.96-inch 128×64 I²C OLED displays the remaining percentage and the time until reset for the five-hour and weekly limits of both tools. A small Python bridge on Windows reads the local cache written by [Claude Code Usage Monitor](https://github.com/CodeZeno/Claude-Code-Usage-Monitor) and sends only those values to the ESP32 over the USB cable. No Wi-Fi is needed.
 

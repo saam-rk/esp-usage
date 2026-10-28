@@ -1,0 +1,29 @@
+# Local session notes (see AGENTS.md)
+PROGRESS.md
+
+# Secrets and environment files
+.env
+.env.*
+*.env
+secrets/
+*.pem
+*.key
+
+# Real usage cache copies (may contain account records)
+usage-cache*.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Arduino / editor build output
+build/
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store

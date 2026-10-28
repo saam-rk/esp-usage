@@ -55,11 +55,11 @@ Tip: right-click `start-bridge.bat` → **Show more options** → **Send to** �
 ## Reading the screen
 
 ```text
-CLAUDE 5h 82% 03:12
-CLAUDE wk 64% 4d07h
+Claude 5h  82% 03:12
+Claude wk  64% 4d07h
 --------------------
-CODEX 5h -- --
-CODEX wk 91% 6d02h
+Codex  5h   --    --
+Codex  wk  91% 6d02h
 ```
 
 - The percentage is what **remains** of each limit.

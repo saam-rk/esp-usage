@@ -59,36 +59,46 @@ void receiveSerial() {
   }
 }
 
+void drawRightAligned(int right, int y, const char *text) {
+  display.drawStr(right - display.getStrWidth(text), y, text);
+}
+
+// One row in fixed columns (6 px wide font): provider, window, remaining %, reset timer.
 void drawWindow(int y, const char *provider, const char *window, int remaining, int reset) {
-  char row[28];
-  String rem = remainingText(remaining);
-  String timer = resetText(reset);
-  snprintf(row, sizeof(row), "%s %s %s %s", provider, window, rem.c_str(), timer.c_str());
-  display.drawStr(0, y, row);
+  display.drawStr(0, y, provider);
+  display.drawStr(42, y, window);
+  drawRightAligned(84, y, remainingText(remaining).c_str());
+  drawRightAligned(121, y, resetText(reset).c_str());
+}
+
+void drawMessage(const char *title, const char *line1, const char *line2) {
+  display.setFont(u8g2_font_6x13B_tf);
+  display.drawStr(0, 12, title);
+  display.drawHLine(0, 16, 128);
+  display.setFont(u8g2_font_6x13_tf);
+  display.drawStr(0, 36, line1);
+  display.drawStr(0, 54, line2);
 }
 
 void drawScreen() {
   display.clearBuffer();
-  display.setFont(u8g2_font_5x7_tf);
   if (!haveData) {
-    display.drawStr(0, 14, "AI USAGE MONITOR");
-    display.drawStr(0, 31, "Waiting for Windows");
-    display.drawStr(0, 45, "Start bridge.py");
+    drawMessage("AI USAGE MONITOR", "Waiting for Windows", "Run start-bridge");
   } else if (millis() - lastDataMillis > LINK_TIMEOUT_MS) {
-    display.drawStr(0, 14, "CONNECTION LOST");
-    display.drawStr(0, 31, "No data from Windows");
-    display.drawStr(0, 45, "Start bridge.py");
+    drawMessage("CONNECTION LOST", "No data from Windows", "Run start-bridge");
   } else if (fields[8] == -2) {
-    display.drawStr(0, 14, "AI USAGE MONITOR");
-    display.drawStr(0, 31, "No usage cache found");
-    display.drawStr(0, 45, "Open desktop monitor");
+    drawMessage("AI USAGE MONITOR", "No usage cache found", "Open desktop monitor");
   } else {
-    drawWindow(10, "CLAUDE", "5h", fields[0], fields[1]);
-    drawWindow(23, "CLAUDE", "wk", fields[2], fields[3]);
-    display.drawHLine(0, 29, 128);
-    drawWindow(42, "CODEX", "5h", fields[4], fields[5]);
-    drawWindow(55, "CODEX", "wk", fields[6], fields[7]);
-    if (fields[8] == 1) display.drawStr(121, 8, "*");
+    display.setFont(u8g2_font_6x13B_tf);
+    drawWindow(12, "Claude", "5h", fields[0], fields[1]);
+    drawWindow(27, "Claude", "wk", fields[2], fields[3]);
+    display.drawHLine(0, 32, 128);
+    drawWindow(47, "Codex", "5h", fields[4], fields[5]);
+    drawWindow(62, "Codex", "wk", fields[6], fields[7]);
+    if (fields[8] == 1) {
+      display.setFont(u8g2_font_5x7_tf);
+      display.drawStr(123, 7, "*");
+    }
   }
   display.sendBuffer();
 }

@@ -69,6 +69,7 @@ CODEX wk 91% 6d02h
 - `--` means the monitor has no reading for that window. Nothing is estimated.
 - `*` in the top-right corner means the monitor's last refresh failed, so values may be old.
 - `No usage cache found` means the monitor's cache file is missing or unreadable.
+- `CONNECTION LOST` means the ESP32 has received nothing from the bridge for 5 seconds. Start the bridge again.
 
 ## Privacy
 

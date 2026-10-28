@@ -6,10 +6,13 @@
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C display(U8G2_R0, U8X8_PIN_NONE);
 
 static const int FIELD_COUNT = 9;
+// The bridge sends a line every second; after this long without one, show "connection lost".
+static const unsigned long LINK_TIMEOUT_MS = 5000;
 int fields[FIELD_COUNT];
 char lineBuffer[128];
 size_t lineLength = 0;
 bool haveData = false;
+unsigned long lastDataMillis = 0;
 
 String resetText(int seconds) {
   if (seconds < 0) return "--";
@@ -28,13 +31,17 @@ String remainingText(int value) {
 }
 
 void parseLine(char *line) {
+  int values[FIELD_COUNT];
   int index = 0;
   char *token = strtok(line, ",");
   while (token != nullptr && index < FIELD_COUNT) {
-    fields[index++] = atoi(token);
+    values[index++] = atoi(token);
     token = strtok(nullptr, ",");
   }
-  if (index == FIELD_COUNT) haveData = true;
+  if (index != FIELD_COUNT) return;  // Ignore incomplete lines.
+  memcpy(fields, values, sizeof(fields));
+  haveData = true;
+  lastDataMillis = millis();
 }
 
 void receiveSerial() {
@@ -66,6 +73,10 @@ void drawScreen() {
   if (!haveData) {
     display.drawStr(0, 14, "AI USAGE MONITOR");
     display.drawStr(0, 31, "Waiting for Windows");
+    display.drawStr(0, 45, "Start bridge.py");
+  } else if (millis() - lastDataMillis > LINK_TIMEOUT_MS) {
+    display.drawStr(0, 14, "CONNECTION LOST");
+    display.drawStr(0, 31, "No data from Windows");
     display.drawStr(0, 45, "Start bridge.py");
   } else if (fields[8] == -2) {
     display.drawStr(0, 14, "AI USAGE MONITOR");

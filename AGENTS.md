@@ -4,15 +4,16 @@ Rules for anyone (human or AI agent) working on this project. Follow them.
 
 ## Goal
 
-Show the remaining usage and the time until reset for the **five-hour** and **weekly** limits of **Claude Code** and **Codex** on a 0.96-inch 128×64 I²C OLED driven by an ESP32 DevKit V1.
+Show the remaining usage and the time until reset for the **five-hour** and **weekly** limits of **Claude Code** and **Codex** on a 0.96-inch 128×64 I²C OLED driven by an ESP32 dev board.
 
-This is a small, personal project maintained by one person. Keep it simple, readable and easy to change. It may be published as open source later, so everything must be in English.
+This is a small, personal project maintained by one person. Keep it simple, readable and easy to change. It is public open source under the MIT License, so everything must be in English and safe to publish.
 
 ## Folder structure
 
 ```text
 AGENTS.md                 Project rules (this file)
 README.md                 What the project is and how to build and run it
+LICENSE                   MIT License, copyright saam-rk
 PROGRESS.md               Local session notes (ignored by Git)
 start-bridge.bat          Double-click launcher: sets up .venv and runs the bridge
 bridge/bridge.py          Windows bridge: reads the monitor cache, sends values over USB serial
@@ -59,7 +60,8 @@ No sensors or buttons are used.
 
 ## Git workflow
 
-- Remote: private GitHub repository `esp-usage`. Do not make it public unless the maintainer explicitly asks.
+- Remote: public GitHub repository `saam-rk/esp-usage`. Everything pushed is visible to anyone.
+- Commit as `saam-rk <191466689+saam-rk@users.noreply.github.com>` (set in this repo's local Git config). Never commit with a personal email address.
 - Routine work goes on the current branch (normally `main`) in small, frequent commits. Push after each commit.
 - Commit messages: English, imperative, with a prefix: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`. No AI attribution.
 - Use a separate branch and a pull request only when the maintainer asks or when a large or risky change clearly benefits from review. Give the maintainer the PR link. Never merge a PR unless asked.

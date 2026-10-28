@@ -12,6 +12,14 @@ An ESP32 with a 0.96-inch 128×64 I²C OLED displays the remaining percentage an
 - Windows with [Claude Code Usage Monitor](https://github.com/CodeZeno/Claude-Code-Usage-Monitor) running, Claude Code and Codex enabled
 - [Arduino IDE 2](https://www.arduino.cc/en/software) and [Python 3](https://www.python.org/downloads/)
 
+## Get the code
+
+On this GitHub page, click **Code → Download ZIP** and unzip it, or clone it with Git:
+
+```powershell
+git clone https://github.com/saam-rk/esp-usage.git
+```
+
 ## Wiring
 
 Push the OLED's four pins into four separate breadboard rows. Then use one male-to-female jumper per pin: the female end goes onto the ESP32 pin, the male end goes into the same breadboard row as the OLED pin.
@@ -40,7 +48,7 @@ The screen should show `Waiting for Windows`.
 
 ## Find the COM port
 
-Open **Device Manager** (right-click the Start button) and expand **Ports (COM & LPT)**. The ESP32 usually appears as `Silicon Labs CP210x ... (COM5)` or `USB-SERIAL CH340 (COM5)`. Unplug and replug it to see which entry disappears and returns. If nothing appears, install the CP210x or CH340 driver, or try another USB cable (some cables only charge).
+You need the port number for uploading in Arduino IDE (the bridge finds it by itself). Open **Device Manager** (right-click the Start button) and expand **Ports (COM & LPT)**. The ESP32 usually appears as `Silicon Labs CP210x ... (COM5)` or `USB-SERIAL CH340 (COM5)`. Unplug and replug it to see which entry disappears and returns. If nothing appears, install the CP210x or CH340 driver, or try another USB cable (some cables only charge).
 
 ## Run the bridge
 
@@ -76,8 +84,15 @@ The bridge reads `%APPDATA%\ClaudeCodeUsageMonitor\usage-cache.json` and uses on
 ## Troubleshooting
 
 - **Blank screen:** check that VDD is on 3V3 and GND on GND, and that SDA/SCL are not swapped. The sketch expects I²C address `0x3C`.
-- **Bridge cannot open the port:** close the Serial Monitor and check the port number in Device Manager.
+- **Bridge says the port is busy:** close Arduino IDE's Serial Monitor and any other bridge window.
+- **Bridge keeps waiting for the ESP32:** try another USB cable (some only charge) and check that the board appears in Device Manager.
 
 ## Credits
 
-Usage data comes from [Claude Code Usage Monitor](https://github.com/CodeZeno/Claude-Code-Usage-Monitor) by Code Zeno (MIT License). This project does not include its code. The display uses the [U8g2](https://github.com/olikraus/u8g2) library.
+Usage data comes from [Claude Code Usage Monitor](https://github.com/CodeZeno/Claude-Code-Usage-Monitor) by Code Zeno (MIT License). This project does not include its code. The display uses the [U8g2](https://github.com/olikraus/u8g2) library (BSD 2-Clause), and the bridge uses [pySerial](https://github.com/pyserial/pyserial) (BSD 3-Clause). Neither is included here; they are installed separately.
+
+This is an unofficial hobby project. It is not affiliated with or endorsed by Anthropic, OpenAI or Code Zeno. Claude and Claude Code are trademarks of Anthropic; Codex is a trademark of OpenAI.
+
+## License
+
+[MIT](LICENSE) © 2026 saam-rk
